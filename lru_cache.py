@@ -61,6 +61,12 @@ class LRUCache:
         self._remove_expired_keys(current_time)
         return [{"Key": k, "Value": v} for k, v in self.cache.items()]
 
+    def get_miss_rate(self):
+        # Calculate and return the miss rate
+        if self.total_accesses == 0:  # Prevent division by zero
+            return 0.0
+        return (self.misses / self.total_accesses) * 100
+
     def _remove_expired_keys(self, current_time):
         # Remove expired keys based on TTL
         expired_keys = [key for key, timestamp in self.timestamps.items()
