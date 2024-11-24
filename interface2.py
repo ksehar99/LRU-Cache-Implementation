@@ -49,7 +49,6 @@ st.markdown("""
         body { background-color: #2c2f33; color: #ffffff; }
     </style>
 """, unsafe_allow_html=True)
-
 # Main Content Based on the selected button
 if st.session_state.selected_button == "🏠 HOME":
     st.title("Welcome to LRU Cache Dashboard")
@@ -62,8 +61,11 @@ if st.session_state.selected_button == "🏠 HOME":
 
     # Initialize cache with user-defined size and TTL
     if st.button("Initialize Cache"):
-        st.session_state.cache = LRUCache(cache_size, ttl)
-        st.success(f"Cache initialized with size {cache_size} and TTL {ttl} seconds.")
+        if cache_size <= 0 or ttl <= 0:
+            st.error("Cache size and TTL must be greater than zero!")
+        else:
+            st.session_state.cache = LRUCache(cache_size, ttl)
+            st.success(f"Cache initialized with size {cache_size} and TTL {ttl} seconds.")
 
 elif st.session_state.selected_button == "➕ ADD CACHE":
     # Ensure cache is initialized before adding entries
@@ -75,8 +77,14 @@ elif st.session_state.selected_button == "➕ ADD CACHE":
         value = st.text_input("Enter Value:")
 
         if st.button("Add Entry"):
-            st.session_state.cache.put(key, value)
-            st.success(f"Entry Added: {key} -> {value}")
+            if not value.strip():
+                st.error("Please enter a value to add to the cache!")
+            else:
+                # Only call `put` here, it handles hits/misses and adds/updates the cache
+                result = st.session_state.cache.put(key, value)
+                
+                # Display the result message (hit or miss) from the `put` method
+                st.success(result)
 
 elif st.session_state.selected_button == "🔍 GET CACHE":
     # Ensure cache is initialized before retrieving entries
@@ -101,7 +109,11 @@ elif st.session_state.selected_button == "🗑️ CLEAR CACHE":
         st.title("Clear Cache")
         if st.button("Clear All Entries"):
             st.session_state.cache.clear()
-            st.success("Cache cleared successfully!")
+            st.session_state.cache.hits = 0
+            st.session_state.cache.misses = 0
+            st.session_state.cache.evictions = 0
+            st.session_state.cache.total_accesses = 0
+            st.success("Cache cleared successfully! Metrics and graphs have been reset.")
 
 elif st.session_state.selected_button == "📊 CACHE STATISTICS":
     # Ensure cache is initialized before displaying statistics
@@ -154,7 +166,7 @@ elif st.session_state.selected_button == "📊 CACHE STATISTICS":
             ax.set_ylabel("Values", fontsize=14)
             ax.set_title("LRU Cache Statistics", fontsize=16)
             ax.set_xticks(range(len(labels)))
-            ax.set_xticklabels(labels,fontsize=12)
+            ax.set_xticklabels(labels, fontsize=12)
 
             # Add data labels on top of the bars
             for bar in bars:
