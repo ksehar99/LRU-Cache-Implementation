@@ -68,23 +68,22 @@ if st.session_state.selected_button == "🏠 HOME":
             st.success(f"Cache initialized with size {cache_size} and TTL {ttl} seconds.")
 
 elif st.session_state.selected_button == "➕ ADD CACHE":
-    # Ensure cache is initialized before adding entries
     if st.session_state.cache is None:
         st.error("Please initialize the cache first from the HOME screen.")
     else:
         st.title("Add Cache Entry")
-        key = st.number_input("Enter Key:", min_value=0, step=1)
-        value = st.text_input("Enter Value:")
+        key = st.number_input("Enter Key (0 to 100):", min_value=0, max_value=100, step=1)
+        value = st.number_input("Enter Value (0 to 100):", min_value=0, max_value=100, step=1)
 
         if st.button("Add Entry"):
-            if not value.strip():
-                st.error("Please enter a value to add to the cache!")
+            result = st.session_state.cache.put(key, value)
+
+            # Display appropriate messages based on the result
+            if "Error" in result:
+                st.error(result)
             else:
-                # Only call `put` here, it handles hits/misses and adds/updates the cache
-                result = st.session_state.cache.put(key, value)
-                
-                # Display the result message (hit or miss) from the `put` method
                 st.success(result)
+
 
 elif st.session_state.selected_button == "🔍 GET CACHE":
     # Ensure cache is initialized before retrieving entries

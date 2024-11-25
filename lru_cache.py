@@ -13,31 +13,32 @@ class LRUCache:
         self.evictions = 0  # Cache evictions
 
     def put(self, key, value):
-        """Add an item to the cache."""
-        self.total_accesses += 1  # Increment total accesses every time a cache operation happens
-        print(f"Attempting to put key: {key} => {value}")
+        """Add an item to the cache with validation."""
+        self.total_accesses += 1
+
+        # Validation for constraints
+        if not (1 <= self.capacity <= 50):
+            return "Error: Cache capacity must be between 1 and 50."
+        if not (0 <= key <= 100):
+            return "Error: Key must be between 0 and 100."
+        if not (0 <= value <= 100):
+            return "Error: Value must be between 0 and 100."
 
         if key in self.cache:
-            # Cache hit
-            self.hits += 1  # Increment the hit counter
-            self.cache[key] = value  # Update the value
-            self.order.remove(key)  # Move the key to the most recent position in the order list
+            self.hits += 1
+            self.cache[key] = value
+            self.order.remove(key)
             self.order.append(key)
-            self.timestamps[key] = time.time()  # Update the timestamp for the key
-            print(f"Cache hit: Updated key {key} with value {value}. Hits: {self.hits}")
+            self.timestamps[key] = time.time()
             return "Cache Hit: Updated value."
 
-        # Cache miss
-        self.misses += 1  # Increment the miss counter
+        self.misses += 1
         if len(self.cache) >= self.capacity:
-            self._evict_if_needed()  # Evict if necessary
+            self._evict_if_needed()
 
-        # Add the new key-value pair to the cache
         self.cache[key] = value
-        self.order.append(key)  # Add the new key to the order list
-        self.timestamps[key] = time.time()  # Store the timestamp for the key
-        print(f"Cache miss: Added key {key} with value {value}. Misses: {self.misses}")
-
+        self.order.append(key)
+        self.timestamps[key] = time.time()
         return "Cache Miss: New entry added."
 
 
