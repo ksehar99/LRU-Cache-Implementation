@@ -2,18 +2,18 @@ import streamlit as st
 import time
 from lru_cache import LRUCache
 
-# Set up the page configuration
+# setting up the configurtion for the page
 st.set_page_config(page_title="LRU Cache Dashboard", page_icon="🧑‍💻")
 
-# Initialize cache state if it doesn't exist
+# Incase a cache doesn't exist, it is initialized
 if "cache" not in st.session_state:
-    st.session_state.cache = None  # Cache will be initialized after user input for size and TTL
+    st.session_state.cache = None  
 
-# Sidebar Navigation
+
 st.sidebar.title("Navigation")
 buttons = ["🏠 HOME", "➕ ADD CACHE", "🔍 GET CACHE", "🗑️ CLEAR CACHE", "📊 CACHE STATISTICS"]
 
-# Manage selected button state
+
 if "selected_button" not in st.session_state:
     st.session_state.selected_button = "🏠 HOME"
 
@@ -49,7 +49,7 @@ st.markdown("""
         body { background-color: #2c2f33; color: #ffffff; }
     </style>
 """, unsafe_allow_html=True)
-# Main Content Based on the selected button
+
 if st.session_state.selected_button == "🏠 HOME":
     st.title("Welcome to LRU Cache Dashboard")
     st.markdown("<div class='project-title'>Manage Your Least Recently Used Cache</div>", unsafe_allow_html=True)
@@ -59,7 +59,7 @@ if st.session_state.selected_button == "🏠 HOME":
     cache_size = st.number_input("Cache Size (default: 5):", min_value=1, value=5, step=1)
     ttl = st.number_input("Time-to-Live (TTL) in seconds for entries:", min_value=1, value=60, step=1)
 
-    # Initialize cache with user-defined size and TTL
+    # Initialize the cache with user-defined size and TTL
     if st.button("Initialize Cache"):
         if cache_size <= 0 or ttl <= 0:
             st.error("Cache size and TTL must be greater than zero!")
@@ -78,7 +78,7 @@ elif st.session_state.selected_button == "➕ ADD CACHE":
         if st.button("Add Entry"):
             result = st.session_state.cache.put(key, value)
 
-            # Display appropriate messages based on the result
+            # Display of appropriate messages based on the result
             if "Error" in result:
                 st.error(result)
             else:
@@ -86,7 +86,7 @@ elif st.session_state.selected_button == "➕ ADD CACHE":
 
 
 elif st.session_state.selected_button == "🔍 GET CACHE":
-    # Ensure cache is initialized before retrieving entries
+    
     if st.session_state.cache is None:
         st.error("Please initialize the cache first from the HOME screen.")
     else:
@@ -101,7 +101,7 @@ elif st.session_state.selected_button == "🔍 GET CACHE":
                 st.warning(f"Cache Miss: No entry found for key {key}")
 
 elif st.session_state.selected_button == "🗑️ CLEAR CACHE":
-    # Ensure cache is initialized before clearing
+    
     if st.session_state.cache is None:
         st.error("Please initialize the cache first from the HOME screen.")
     else:
@@ -115,22 +115,22 @@ elif st.session_state.selected_button == "🗑️ CLEAR CACHE":
             st.success("Cache cleared successfully! Metrics and graphs have been reset.")
 
 elif st.session_state.selected_button == "📊 CACHE STATISTICS":
-    # Ensure cache is initialized before displaying statistics
+    # display of statistics
     if st.session_state.cache is None:
         st.error("Please initialize the cache first from the HOME screen.")
     else:
         st.title("Cache Statistics")
 
-        # Fetch statistics from the cache
+        # statistics are fetched from the cache
         stats = st.session_state.cache.get_statistics()
 
-        # Display metrics using Streamlit's columns for layout
+        
         cols = st.columns(4)
         cols[0].metric("Cache Hits", stats["hits"])
         cols[1].metric("Cache Misses", stats["misses"])
         cols[2].metric("Evictions", stats["evictions"])
 
-        # Calculate and display Miss Rate
+        # Calculate and display of Miss Rate
         total_requests = stats["hits"] + stats["misses"]
         miss_rate = (stats["misses"] / total_requests * 100) if total_requests > 0 else 0.0
         cols[3].metric("Miss Rate", f"{miss_rate:.2f}%")
@@ -145,16 +145,16 @@ elif st.session_state.selected_button == "📊 CACHE STATISTICS":
         else:
             st.info("No active cache entries")
 
-        # Add button to show graphical representation
+    
         if st.button("Show Graph"):
             import matplotlib.pyplot as plt
 
-            # Prepare data for the graph
+            
             stats["Miss Rate (%)"] = miss_rate
             labels = list(stats.keys())
             values = list(stats.values())
 
-            # Create the graph
+            # Creation of the graph
             fig, ax = plt.subplots(figsize=(10, 6))
             bars = ax.bar(
                 labels,
