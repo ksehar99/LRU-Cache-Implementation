@@ -4,19 +4,19 @@ class LRUCache:
     def __init__(self, capacity: int, ttl: int):
         self.capacity = capacity
         self.ttl = ttl
-        self.cache = {}  # Store key-value pairs
-        self.order = []  # Track the order of keys for eviction (Most recent at end)
-        self.timestamps = {}  # Store timestamps for each cache entry
-        self.hits = 0  # Cache hits
-        self.misses = 0  # Cache misses
-        self.total_accesses = 0  # Total cache accesses
-        self.evictions = 0  # Cache evictions
+        self.cache = {}  # Storing the key-value pairs
+        self.order = []  # Tracking the order of keys for eviction (Most recent at end)
+        self.timestamps = {}  # Storing timestamps for each cache entry
+        self.hits = 0  
+        self.misses = 0  
+        self.total_accesses = 0  
+        self.evictions = 0 
 
     def put(self, key, value):
         """Add an item to the cache with validation."""
         self.total_accesses += 1
 
-        # Validation for constraints
+    
         if not (1 <= self.capacity <= 50):
             return "Error: Cache capacity must be between 1 and 50."
         if not (0 <= key <= 100):
@@ -48,10 +48,10 @@ class LRUCache:
         # Remove expired keys before accessing
         self._remove_expired_keys(current_time)
 
-        self.total_accesses += 1  # Every time a key is accessed, it's counted as an access
-        
+        self.total_accesses += 1  
+
         if key in self.cache:
-            # Move the accessed key to the most recent position in the order list
+            
             self.order.remove(key)
             self.order.append(key)
             self.hits += 1
@@ -86,7 +86,7 @@ class LRUCache:
 
     def get_miss_rate(self):
         """Calculate and return the miss rate."""
-        if self.total_accesses == 0:  # Prevent division by zero
+        if self.total_accesses == 0:  
             return 0.0
         return (self.misses / self.total_accesses) * 100
 
@@ -96,13 +96,14 @@ class LRUCache:
                         if current_time - timestamp >= self.ttl]
         for key in expired_keys:
             self.cache.pop(key, None)  # Remove expired key from cache
-            self.timestamps.pop(key, None)  # Remove expired key from timestamps
+            self.timestamps.pop(key, None)  
             self.order.remove(key)  # Remove expired key from order list
-            self.evictions += 1  # Increment evictions
+            self.evictions += 1  
 
     def _evict_if_needed(self):
         """Evict the least recently used (LRU) item."""
-        lru_key = self.order.pop(0)  # Remove the first (least recently used) key
+        lru_key = self.order.pop(0) 
         del self.cache[lru_key]  # Delete the LRU key-value pair
-        del self.timestamps[lru_key]  # Remove the timestamp for the LRU item
+        del self.timestamps[lru_key]  
         self.evictions += 1  # Increment eviction count
+
